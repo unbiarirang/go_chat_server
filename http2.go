@@ -20,22 +20,17 @@ type Room struct {
 }
 
 func (r *Room) serve() {
-	fmt.Println("serve")
 	for {
 		select {
 		case client := <-r.enter:
-			fmt.Println("in client")
 			r.members[client] = true
-			fmt.Println("members", r.members)
 		case message := <-r.messages:
-			fmt.Println("in message")
 			r.broadCast(message)
 		}
 	}
 }
 
 func (r *Room) broadCast(message string) {
-	fmt.Println("in broadCast")
 	for client := range lobby.members {
 		client <- message
 	}
@@ -89,7 +84,6 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 func clockStreamHandler(w http.ResponseWriter, r *http.Request) {
 	client := make(chan string)
 	var nick = r.URL.Query().Get("nick")
-	fmt.Println(nick)
 
 	go func() { lobby.enter <- client }()
 	go func() { lobby.messages <- "*****" + nick + " entered*****" }()
